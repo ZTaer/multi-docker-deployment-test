@@ -1,0 +1,62 @@
+version: "3.9" # Docker Compose 文件版本
+
+services:
+  db:
+    image: postgres # 使用官方的 PostgreSQL 镜像
+    restart: always # 容器崩溃或 Docker 重启时自动重启容器
+    shm_size: 128mb # 设置共享内存大小为 128MB
+    environment:
+      POSTGRES_PASSWORD: example # 设置 PostgreSQL 数据库的用户密码
+    volumes:
+      - db-data:/var/lib/postgresql/data # 将名为 db-data 的卷挂载到容器的 /var/lib/postgresql/data 目录
+  redis:
+    image: redis:7
+
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+    environment:
+      - WDS_SOCKET_PORT=0 # 兼容 socket 端口
+  nginx:
+    image: nginx:1.27.0
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - "3050:80"
+
+volumes:
+  db-data: # 定义名为 db-data 的卷，Docker 将管理其存储

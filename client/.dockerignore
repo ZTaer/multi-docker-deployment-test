@@ -1,0 +1,4 @@
+# 排除Docker不需要的文件 ( 等待笔记 )
+node_modules
+.DS_Store
+*.log
