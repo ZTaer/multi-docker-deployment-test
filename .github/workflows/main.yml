@@ -17,21 +17,28 @@ jobs:
     steps:
       # 步骤 1: 检查代码，并登录 Docker
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        run: docker build -t ztaer/multi-docker-deployment-test -f ./client/Dockerfile.dev ./client
-        run: docker run -e CI=true ztaer/multi-docker-deployment-test npm test
+
+      - name: Build and Test Client Docker Image
+        run: |
+          docker build -t ztaer/multi-docker-deployment-test -f ./client/Dockerfile.dev ./client
+          docker run -e CI=true ztaer/multi-docker-deployment-test npm test
 
       # 步骤 2: 构建 Docker 镜像
-      - name: Build Docker image
-        run: docker build -t ztaer/multi-docker-deploy-client ./client
-        run: docker build -t ztaer/multi-docker-deploy-server ./server
-        run: docker build -t ztaer/multi-docker-deploy-nginx ./nginx
-        run: docker build -t ztaer/multi-docker-deploy-worker ./worker
-      
+      - name: Build Docker images
+        run: |
+          docker build -t ztaer/multi-docker-deploy-client ./client
+          docker build -t ztaer/multi-docker-deploy-server ./server
+          docker build -t ztaer/multi-docker-deploy-nginx ./nginx
+          docker build -t ztaer/multi-docker-deploy-worker ./worker
+
       # 步骤 3: 将 Docker 镜像推送到 Docker Hub
-      - name: Push Docker image
-        run: docker push ztaer/multi-docker-deploy-client
-        run: docker push ztaer/multi-docker-deploy-server
-        run: docker push ztaer/multi-docker-deploy-nginx
-        run: docker push ztaer/multi-docker-deploy-worker
+      - name: Push Docker images
+        run: |
+          docker push ztaer/multi-docker-deploy-client
+          docker push ztaer/multi-docker-deploy-server
+          docker push ztaer/multi-docker-deploy-nginx
+          docker push ztaer/multi-docker-deploy-worker
