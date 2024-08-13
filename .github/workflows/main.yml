@@ -16,7 +16,8 @@ jobs:
   build:
     runs-on: ubuntu-latest # 指定使用的运行环境为 Ubuntu 最新版本
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       # 步骤 2: 登录 Docker Hub
       - name: Login to Docker Hub
@@ -33,7 +34,7 @@ jobs:
       # 步骤 4: 运行 Docker Compose 并构建镜像和启动容器
       - name: Run Docker Compose with Environment Variables
         run: |
-          docker-compose up -d
+          docker compose up -d
         env:
           REDIS_HOST: multi-docker-redis.yksahy.ng.0001.ape1.cache.amazonaws.com # Redis 服务的主机名
           REDIS_PORT: 6379 # Redis 服务的端口
@@ -46,7 +47,7 @@ jobs:
       # 步骤 5: 推送 Docker Compose 构建的镜像到 Docker Hub
       - name: Push Docker Compose Images
         run: |
-          docker-compose push
+          docker compose push
         # 将通过 docker-compose 构建的所有镜像推送到 Docker Hub
 
       # 步骤 6: 生成部署包
