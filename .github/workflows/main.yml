@@ -16,17 +16,12 @@ jobs:
   build:
     runs-on: ubuntu-latest # 指定使用的运行环境为 Ubuntu 最新版本
     steps:
-      # 步骤 1: 检出代码
       - name: Checkout code
-        uses: actions/checkout@v4
-        # 说明: 使用官方的 actions/checkout@v4 Action 将仓库代码检出到 GitHub Actions 的 runner 环境中。
-        # 目的: 确保后续步骤能够访问到最新的项目文件。
+        uses: actions/checkout@v3
 
-      # 步骤 2: 设置 Docker Buildx
+      # 设置 Docker 和 Docker Compose
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        # 说明: 使用官方的 docker/setup-buildx-action@v2 Action 安装和设置 Docker Buildx。
-        # 目的: 提供更高效的 Docker 镜像构建能力，并支持多平台构建和缓存导出等高级功能。
 
       # 步骤 2: 登录 Docker Hub
       - name: Login to Docker Hub
