@@ -34,7 +34,7 @@ jobs:
       # 步骤 4: 运行 Docker Compose 并构建镜像和启动容器
       - name: Run Docker Compose with Environment Variables
         run: |
-          docker compose up -d
+          docker compose up -d --build
         env:
           REDIS_HOST: multi-docker-redis.yksahy.ng.0001.ape1.cache.amazonaws.com # Redis 服务的主机名
           REDIS_PORT: 6379 # Redis 服务的端口
