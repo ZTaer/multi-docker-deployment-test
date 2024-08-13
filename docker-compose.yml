@@ -9,20 +9,20 @@ services:
     mem_limit: 128m
     hostname: api
     environment:
-      - REDIS_HOST=$REDIS_HOST # Redis 服务的主机名
-      - REDIS_PORT=$REDIS_PORT # Redis 服务的端口
-      - POSTGRES_USER=$POSTGRES_USER # PostgreSQL 用户名
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD # PostgreSQL 用户密码
-      - POSTGRES_HOST=$POSTGRES_HOST # PostgreSQL 服务的主机名
-      - POSTGRES_PORT=$POSTGRES_PORT # PostgreSQL 服务的端口
-      - POSTGRES_DATABASE=$POSTGRES_DATABASE # PostgreSQL 数据库名
+      - REDIS_HOST=${REDIS_HOST} # Redis 服务的主机名
+      - REDIS_PORT=${REDIS_PORT} # Redis 服务的端口
+      - POSTGRES_USER=${POSTGRES_USER} # PostgreSQL 用户名
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # PostgreSQL 用户密码
+      - POSTGRES_HOST=${POSTGRES_HOST} # PostgreSQL 服务的主机名
+      - POSTGRES_PORT=${POSTGRES_PORT} # PostgreSQL 服务的端口
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE} # PostgreSQL 数据库名
   worker:
     image: "docker.io/ztaer/multi-docker-deploy-worker:latest"
     mem_limit: 128m
     hostname: worker
     environment:
-      - REDIS_HOST=$REDIS_HOST
-      - REDIS_PORT=$REDIS_PORT
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
   nginx:
     image: "docker.io/ztaer/multi-docker-deploy-nginx:latest"
     mem_limit: 128m
