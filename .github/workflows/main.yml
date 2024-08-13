@@ -37,7 +37,10 @@ jobs:
 
       # 步骤 4: 运行 Docker Compose 并构建镜像和启动容器
       - name: Run Docker Compose with Environment Variables
-        run: docker-compose up -d --build
+        uses: docker/compose-action@v2
+        with:
+          files: docker-compose.yml
+          args: up -d --build
         env:
           REDIS_HOST: multi-docker-redis.yksahy.ng.0001.ape1.cache.amazonaws.com # Redis 服务的主机名
           REDIS_PORT: 6379 # Redis 服务的端口
@@ -46,6 +49,7 @@ jobs:
           POSTGRES_HOST: multi-docker-postgres.cb4msqs4ip0s.ap-east-1.rds.amazonaws.com # PostgreSQL 服务的主机名
           POSTGRES_PORT: 5432 # PostgreSQL 服务的端口
           POSTGRES_DATABASE: postgres # PostgreSQL 数据库名
+
       # 步骤 5: 推送 Docker Compose 构建的镜像到 Docker Hub
       - name: Push Docker Compose Images
         run: |
