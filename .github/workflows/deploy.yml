@@ -4,20 +4,21 @@ name: CI and Deploy to AWS Elastic Beanstalk
 on:
   push:
     branches:
-      - main # 当推送到 main 分支时触发
+      - main # 当推送到 main 分支时触发工作流
   pull_request:
     branches:
-      - main # 当有 pull request 指向 main 分支时触发
+      - main # 当有 pull request 指向 main 分支时触发工作流
   workflow_dispatch: # 允许手动触发工作流
     branches:
-      - main
+      - main # 指定只针对 main 分支
 
 jobs:
   build:
-    runs-on: ubuntu-latest # 指定使用的运行环境为 Ubuntu 最新版本
+    runs-on: ubuntu-latest # 使用最新版本的 Ubuntu 作为运行环境
     steps:
+      # 步骤 1: 检出代码
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3 # 检出当前仓库的代码
 
       # 步骤 2: 登录 Docker Hub
       - name: Login to Docker Hub
@@ -29,8 +30,9 @@ jobs:
         run: |
           docker build -t ztaer/multi-docker-deployment-test -f ./client/Dockerfile.dev ./client
           docker run -e CI=true ztaer/multi-docker-deployment-test npm test
-        # 构建客户端测试镜像并运行测试，确保代码没有破坏
+        # 构建客户端 Docker 测试镜像，并运行测试，以确保代码没有破坏
 
+      # 步骤 4: 创建 .env 文件并设置环境变量
       - name: Create .env file from .env.example and set secrets
         run: |
           cp .env.example .env
@@ -41,32 +43,33 @@ jobs:
           sed -i '/^POSTGRES_HOST=/c\POSTGRES_HOST=${{ vars.POSTGRES_HOST }}' .env || echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> .env
           sed -i '/^POSTGRES_PORT=/c\POSTGRES_PORT=${{ vars.POSTGRES_PORT }}' .env || echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> .env
           sed -i '/^POSTGRES_DATABASE=/c\POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}' .env || echo "POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}" >> .env
+        # 从 .env.example 文件创建 .env 文件，并根据环境变量和秘密更新其中的值
 
-      # 步骤 4: 运行 Docker Compose 并构建镜像和启动容器
+      # 步骤 5: 运行 Docker Compose 并构建镜像和启动容器
       - name: Run Docker Compose with Environment Variables
         run: |
           docker compose up -d --build
         env:
-          REDIS_HOST: ${{vars.REDIS_HOST}} # Redis 服务的主机名
-          REDIS_PORT: ${{vars.REDIS_PORT}} # Redis 服务的端口
-          POSTGRES_USER: ${{secrets.POSTGRES_USER}} # PostgreSQL 用户名
-          POSTGRES_PASSWORD: ${{secrets.DOCKER_PASSWORD}} # PostgreSQL 用户密码
-          POSTGRES_HOST: ${{vars.POSTGRES_HOST}} # PostgreSQL 服务的主机名
-          POSTGRES_PORT: ${{vars.POSTGRES_PORT}} # PostgreSQL 服务的端口
-          POSTGRES_DATABASE: ${{vars.POSTGRES_DATABASE}} # PostgreSQL 数据库名
+          REDIS_HOST: ${{vars.REDIS_HOST}} # 设置 Redis 服务的主机名
+          REDIS_PORT: ${{vars.REDIS_PORT}} # 设置 Redis 服务的端口
+          POSTGRES_USER: ${{secrets.POSTGRES_USER}} # 设置 PostgreSQL 用户名
+          POSTGRES_PASSWORD: ${{secrets.DOCKER_PASSWORD}} # 设置 PostgreSQL 用户密码
+          POSTGRES_HOST: ${{vars.POSTGRES_HOST}} # 设置 PostgreSQL 服务的主机名
+          POSTGRES_PORT: ${{vars.POSTGRES_PORT}} # 设置 PostgreSQL 服务的端口
+          POSTGRES_DATABASE: ${{vars.POSTGRES_DATABASE}} # 设置 PostgreSQL 数据库名
 
-      # 步骤 5: 推送 Docker Compose 构建的镜像到 Docker Hub
+      # 步骤 6: 推送 Docker Compose 构建的镜像到 Docker Hub
       - name: Push Docker Compose Images
         run: |
           docker compose push
-        # 将通过 docker-compose 构建的所有镜像推送到 Docker Hub
+        # 将通过 Docker Compose 构建的所有镜像推送到 Docker Hub
 
-      # 步骤 6: 生成部署包
+      # 步骤 7: 生成部署包
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
-        # 将项目打包为一个 zip 文件，排除 .git 目录
+        # 将项目文件打包为一个 zip 文件，排除 .git 目录
 
-      # 步骤 7: 部署到 AWS Elastic Beanstalk
+      # 步骤 8: 部署到 AWS Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v18
         with:
