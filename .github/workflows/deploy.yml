@@ -36,7 +36,7 @@ jobs:
       - name: Create .env file from .env.example and set secrets
         run: |
           cp .env.example .env
-          sed -i '/^REDIS_HOST=/c\REDIS_HOST=${{ vars.REDIS_HOST }}' .env || echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env
+          sed -i '/^REDIS_HOST=/c\REDIS_HOST=${{ vars.REDIS_HOST }}' .env || echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env 
           sed -i '/^REDIS_PORT=/c\REDIS_PORT=${{ vars.REDIS_PORT }}' .env || echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
           sed -i '/^POSTGRES_USER=/c\POSTGRES_USER=${{ secrets.POSTGRES_USER }}' .env || echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           sed -i '/^POSTGRES_PASSWORD=/c\POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}' .env || echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
