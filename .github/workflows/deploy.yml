@@ -48,7 +48,7 @@ jobs:
       # 步骤 5: 运行 Docker Compose 并构建镜像和启动容器
       - name: Run Docker Compose with Environment Variables
         run: |
-          docker compose up -d --build
+          docker compose up -f docker-compose.prod.yml -d --build
         env:
           REDIS_HOST: ${{vars.REDIS_HOST}} # 设置 Redis 服务的主机名
           REDIS_PORT: ${{vars.REDIS_PORT}} # 设置 Redis 服务的端口
