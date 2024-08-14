@@ -1,14 +1,14 @@
 version: "3"
 services:
   client:
-    image: "ztaer/multi-docker-deploy-client:${CLIENT_IMAGE_VERSION}"
+    image: "docker.io/ztaer/multi-docker-deploy-client:${CLIENT_IMAGE_VERSION}"
     mem_limit: 128m
     hostname: client
     build:
       context: ./client
       dockerfile: Dockerfile
   api:
-    image: "ztaer/multi-docker-deploy-server:${API_IMAGE_VERSION}"
+    image: "docker.io/ztaer/multi-docker-deploy-server:${API_IMAGE_VERSION}"
     mem_limit: 128m
     hostname: api
     environment:
@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
 
   worker:
-    image: "ztaer/multi-docker-deploy-worker:${WORKER_IMAGE_VERSION}"
+    image: "docker.io/ztaer/multi-docker-deploy-worker:${WORKER_IMAGE_VERSION}"
     mem_limit: 128m
     hostname: worker
     environment:
@@ -35,7 +35,7 @@ services:
       dockerfile: Dockerfile
 
   nginx:
-    image: "ztaer/multi-docker-deploy-nginx:${NGINX_IMAGE_VERSION}"
+    image: "docker.io/ztaer/multi-docker-deploy-nginx:${NGINX_IMAGE_VERSION}"
     mem_limit: 128m
     hostname: nginx
     ports:
