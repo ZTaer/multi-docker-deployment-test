@@ -81,5 +81,5 @@ jobs:
           region: ${{ vars.AWS_REGION }} # 部署的 AWS 区域
           version_label: multi-deploy-${{ github.run_id }} # 部署版本的标签，包含运行编号
           deployment_package: deploy.zip # 部署使用的包文件
-          use_existing_version_if_available: true # 如果相同版本存在，使用已存在的版本
+          # use_existing_version_if_available: true # 如果相同版本存在，使用已存在的版本
         # 使用指定的 AWS 凭据和配置信息，将生成的部署包部署到 AWS Elastic Beanstalk 中
