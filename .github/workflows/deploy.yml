@@ -31,6 +31,17 @@ jobs:
           docker run -e CI=true ztaer/multi-docker-deployment-test npm test
         # 构建客户端测试镜像并运行测试，确保代码没有破坏
 
+      - name: Create .env file from .env.example and set secrets
+        run: |
+          cp .env.example .env
+          sed -i '/^REDIS_HOST=/c\REDIS_HOST=${{ vars.REDIS_HOST }}' .env || echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env
+          sed -i '/^REDIS_PORT=/c\REDIS_PORT=${{ vars.REDIS_PORT }}' .env || echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
+          sed -i '/^POSTGRES_USER=/c\POSTGRES_USER=${{ secrets.POSTGRES_USER }}' .env || echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+          sed -i '/^POSTGRES_PASSWORD=/c\POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}' .env || echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          sed -i '/^POSTGRES_HOST=/c\POSTGRES_HOST=${{ vars.POSTGRES_HOST }}' .env || echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> .env
+          sed -i '/^POSTGRES_PORT=/c\POSTGRES_PORT=${{ vars.POSTGRES_PORT }}' .env || echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> .env
+          sed -i '/^POSTGRES_DATABASE=/c\POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}' .env || echo "POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}" >> .env
+
       # 步骤 4: 运行 Docker Compose 并构建镜像和启动容器
       - name: Run Docker Compose with Environment Variables
         run: |
