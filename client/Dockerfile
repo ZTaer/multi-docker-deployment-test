@@ -1,5 +1,5 @@
 ## Node
-FROM node:18-alpine AS builder
+FROM node:18-alpine AS builder-prod
 
 WORKDIR /app
 
@@ -17,4 +17,4 @@ FROM nginx
 EXPOSE 3000
 
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder-prod /app/build /usr/share/nginx/html
