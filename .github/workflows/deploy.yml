@@ -62,12 +62,6 @@ jobs:
           file: docker-compose.prod.yml # 使用 Docker Compose 文件
           push: true
           platforms: linux/amd64,linux/arm64
-          # 使用版本号标签
-          tags: |
-            ztaer/multi-docker-deploy-client:${{env.VERSION}}
-            ztaer/multi-docker-deploy-server:${{env.VERSION}}
-            ztaer/multi-docker-deploy-worker:${{env.VERSION}}
-            ztaer/multi-docker-deploy-nginx:${{env.VERSION}}
 
       # 步骤 7: 生成部署包
       - name: Generate deployment package
