@@ -57,8 +57,8 @@ jobs:
       # 步骤 5: 运行 Docker Compose 并构建镜像和启动容器
       - name: Build and push Docker images
         run: |
-          docker-compose -f docker-compose.prod.yml build
-          docker-compose -f docker-compose.prod.yml push
+          docker compose -f docker-compose.prod.yml build
+          docker compose -f docker-compose.prod.yml push
 
       # 步骤 7: 生成部署包
       - name: Generate deployment package
