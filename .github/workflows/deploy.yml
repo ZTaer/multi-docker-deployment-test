@@ -66,6 +66,7 @@ jobs:
           zip -r deploy.zip \
           docker-compose.yml \
           .env.example \
+          .env \
 
       # 步骤 8: 部署到 AWS Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
