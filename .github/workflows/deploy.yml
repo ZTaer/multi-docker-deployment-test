@@ -62,8 +62,10 @@ jobs:
 
       # 步骤 7: 生成部署包
       - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*'
-        # 将项目文件打包为一个 zip 文件，排除 .git 目录
+        run: |
+          zip -r deploy.zip \
+          docker-compose.yml \
+          .env.example \
 
       # 步骤 8: 部署到 AWS Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
