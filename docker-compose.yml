@@ -1,12 +1,12 @@
 version: "3"
 services:
   client:
-    image: "ztaer/multi-docker-deploy-client"
+    image: "ztaer/multi-docker-deploy-client:1.0.0"
     mem_limit: 128m
     hostname: client
 
   api:
-    image: "ztaer/multi-docker-deploy-server"
+    image: "ztaer/multi-docker-deploy-server:1.0.0"
     mem_limit: 128m
     hostname: api
     environment:
@@ -19,7 +19,7 @@ services:
       - POSTGRES_DATABASE=${POSTGRES_DATABASE} # PostgreSQL 数据库名
 
   worker:
-    image: "ztaer/multi-docker-deploy-worker"
+    image: "ztaer/multi-docker-deploy-worker:1.0.0"
     mem_limit: 128m
     hostname: worker
     environment:
@@ -27,7 +27,7 @@ services:
       - REDIS_PORT=${REDIS_PORT}
 
   nginx:
-    image: "ztaer/multi-docker-deploy-nginx"
+    image: "ztaer/multi-docker-deploy-nginx:1.0.0"
     mem_limit: 128m
     hostname: nginx
     ports:
