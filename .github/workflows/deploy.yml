@@ -17,31 +17,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 # 检出当前仓库的代码
 
+      # 步骤 2: 设置 QEMU 虚拟化环境
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v3 # 配置 QEMU，用于支持跨平台的虚拟化
 
+      # 步骤 3: 设置 Docker Buildx
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3 # 配置 Docker Buildx，支持多架构构建
 
-      # 步骤 2: 登录 Docker Hub
+      # 步骤 4: 登录 Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }} # 从 GitHub Secrets 中获取 Docker 用户名
+          password: ${{ secrets.DOCKER_PASSWORD }} # 从 GitHub Secrets 中获取 Docker 密码
         # 使用 GitHub Secrets 中存储的 Docker Hub 凭据登录
 
-      # 步骤 3: 构建并测试客户端 Docker 镜像
+      # 步骤 5: 构建并测试客户端 Docker 镜像
+      #   a) 构建 Docker 测试镜像
+      #   b) 运行测试，确保代码正确性
       - name: Build and Test Client Docker Image
         run: |
-          docker build -t ztaer/multi-docker-deployment-test -f ./client/Dockerfile.dev ./client
+          docker build -t ztaer/multi-docker-deployment-test -f ./client/Dockerfile.dev ./client 
           docker run -e CI=true ztaer/multi-docker-deployment-test npm test
         # 构建客户端 Docker 测试镜像，并运行测试，以确保代码没有破坏
 
-      # 步骤 4: 创建 .env 文件并设置环境变量
+      # 步骤 6: 创建 .env 文件并设置环境变量
+      #   a) 从 .env.example 文件创建 .env 文件
       - name: Create .env file from .env.example and set secrets
         run: |
-          cp .env.example .env
+          cp .env.example .env 
           sed -i '/^REDIS_HOST=/c\REDIS_HOST=${{ vars.REDIS_HOST }}' .env || echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env 
           sed -i '/^REDIS_PORT=/c\REDIS_PORT=${{ vars.REDIS_PORT }}' .env || echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
           sed -i '/^POSTGRES_USER=/c\POSTGRES_USER=${{ secrets.POSTGRES_USER }}' .env || echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
@@ -51,26 +56,29 @@ jobs:
           sed -i '/^POSTGRES_DATABASE=/c\POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}' .env || echo "POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}" >> .env
         # 从 .env.example 文件创建 .env 文件，并根据环境变量和秘密更新其中的值
 
-      # 步骤 5: 运行 Docker Compose 并构建镜像和启动容器
+      # 步骤 7: 使用 Docker Compose 构建和推送镜像
+      #   a) 使用生产环境的 Docker Compose 文件构建镜像
+      #   b) 将构建的镜像推送到 Docker Hub
       - name: Build and push Docker images
         run: |
-          docker compose -f docker-compose.prod.yml build
+          docker compose -f docker-compose.prod.yml build 
           docker compose -f docker-compose.prod.yml push
 
-      # 步骤 7: 生成部署包
+      # 步骤 8: 生成部署包
       - name: Generate deployment package
         run: |
           zip -r deploy.zip \
           docker-compose.yml \
           .env.example \
           .env \
+        # 将 docker-compose.yml、.env.example 和 .env 文件打包为 deploy.zip，供部署使用
 
-      # 步骤 8: 部署到 AWS Elastic Beanstalk
+      # 步骤 9: 部署到 AWS Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v18
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }} # AWS 访问密钥 ID
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS 密钥
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS 秘密访问密钥
           application_name: ${{ vars.AWS_APPLICATION_NAME }} # Elastic Beanstalk 应用名称
           environment_name: ${{ vars.AWS_ENVIRONMENT_NAME }} # Elastic Beanstalk 环境名称
           existing_bucket_name: ${{ vars.AWS_EXISTING_BUCKET_NAME }} # 用于存储部署包的 S3 存储桶
