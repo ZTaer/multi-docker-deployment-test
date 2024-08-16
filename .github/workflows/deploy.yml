@@ -49,7 +49,6 @@ jobs:
           sed -i '/^POSTGRES_HOST=/c\POSTGRES_HOST=${{ vars.POSTGRES_HOST }}' .env || echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> .env
           sed -i '/^POSTGRES_PORT=/c\POSTGRES_PORT=${{ vars.POSTGRES_PORT }}' .env || echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> .env
           sed -i '/^POSTGRES_DATABASE=/c\POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}' .env || echo "POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}" >> .env
-          sed -i '/^VERSION=/c\VERSION=${{ github.event.inputs.tag }}' .env || echo "VERSION=${{ github.event.inputs.tag }}" >> .env
         # 从 .env.example 文件创建 .env 文件，并根据环境变量和秘密更新其中的值
 
       # 步骤 5: 运行 Docker Compose 并构建镜像和启动容器
