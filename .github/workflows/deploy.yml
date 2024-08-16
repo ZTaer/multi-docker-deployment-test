@@ -2,13 +2,15 @@ name: CI and Deploy to AWS Elastic Beanstalk
 
 # 定义触发条件
 on:
-  push:
-    branches:
-      - main # 当推送到 main 分支时触发工作流
-  pull_request:
-    branches:
-      - main # 当有 pull request 指向 main 分支时触发工作流
+  # push:
+  #   branches:
+  #     - main # 当推送到 main 分支时触发工作流
   workflow_dispatch: # 允许手动触发工作流
+    tag:
+      description: "Tag for the Docker image"
+      required: true
+      default: "latest"
+      type: string
     branches:
       - main # 指定只针对 main 分支
 
@@ -52,6 +54,7 @@ jobs:
           sed -i '/^POSTGRES_HOST=/c\POSTGRES_HOST=${{ vars.POSTGRES_HOST }}' .env || echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> .env
           sed -i '/^POSTGRES_PORT=/c\POSTGRES_PORT=${{ vars.POSTGRES_PORT }}' .env || echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> .env
           sed -i '/^POSTGRES_DATABASE=/c\POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}' .env || echo "POSTGRES_DATABASE=${{ vars.POSTGRES_DATABASE }}" >> .env
+          sed -i '/^VERSION=/c\VERSION=${{ github.event.inputs.tag }}' .env || echo "VERSION=${{ github.event.inputs.tag }}" >> .env
         # 从 .env.example 文件创建 .env 文件，并根据环境变量和秘密更新其中的值
 
       # 步骤 5: 运行 Docker Compose 并构建镜像和启动容器
